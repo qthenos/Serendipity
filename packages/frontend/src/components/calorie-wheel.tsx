@@ -27,13 +27,21 @@ const chartData = [
     calories: 400,
     fill: "var(--color-breakfast)"
   },
-  { meal: "lunch", calories: 1000, fill: "var(--color-lunch)" },
+  {
+    meal: "lunch",
+    calories: 1000,
+    fill: "var(--color-lunch)"
+  },
   {
     meal: "dinner",
     calories: 1200,
     fill: "var(--color-dinner"
   },
-  { meal: "snacks", calories: 300, fill: "var(--color-snacks)" }
+  {
+    meal: "snacks",
+    calories: 300,
+    fill: "var(--color-snacks)"
+  }
 ];
 
 const chartConfig = {
