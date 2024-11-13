@@ -44,6 +44,8 @@ const chartData = [
   }
 ];
 
+
+
 const chartConfig = {
   calories: {
     label: "Calories"
