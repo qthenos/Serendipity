@@ -2,10 +2,6 @@ import { NextResponse } from "next/server";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
-interface FoodData {
-    meal: string;
-    calories: number;
-}
 
 interface GroupedData {
     [meal: string]: number;
@@ -25,7 +21,6 @@ export const GET = async () => {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    const groupedData = {};
 
     const result = data.reduce<GroupedData>((groupedData, item) => {
         const { meal, calories } = item;
