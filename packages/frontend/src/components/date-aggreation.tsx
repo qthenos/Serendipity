@@ -1,10 +1,4 @@
 import {
-  FontBoldIcon,
-  FontItalicIcon,
-  UnderlineIcon
-} from "@radix-ui/react-icons";
-
-import {
   ToggleGroup,
   ToggleGroupItem
 } from "@/components/ui/toggle-group";
