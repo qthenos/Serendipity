@@ -1,26 +1,37 @@
-import axios from 'axios'; 
+import express, { Request, Response } from 'express';
+import bodyParser from 'body-parser';
+import axios from 'axios';
 import * as dotenv from 'dotenv';
 
+// Load environment variables
 dotenv.config({ path: '/Users/dakshesh/Serendipity/packages/frontend/.env' });
-
-console.log("EDAMAM_APP_ID:", process.env.EDAMAM_APP_ID);
-console.log("EDAMAM_APP_KEY:", process.env.EDAMAM_APP_KEY);
 
 const EDAMAM_APP_ID = process.env.EDAMAM_APP_ID;
 const EDAMAM_APP_KEY = process.env.EDAMAM_APP_KEY;
-
-const url = 'https://api.edamam.com/api/food-database/v2/parser';
-console.log(`API Request URL: ${url}?app_id=${EDAMAM_APP_ID}&app_key=${EDAMAM_APP_KEY}&ingr=apple`);
-
 
 if (!EDAMAM_APP_ID || !EDAMAM_APP_KEY) {
     throw new Error("Missing API credentials. Please check your .env file.");
 }
 
-async function testAPI(query: string) {
-    const url = 'https://api.edamam.com/api/food-database/v2/parser';
+// Initialize Express
+const app = express();
 
+// Middleware to parse JSON request bodies
+app.use(bodyParser.json());
+
+// Define the REST API endpoint
+app.post('/api/food-data', async (req: Request, res: Response): Promise<void> => {
     try {
+        const { query } = req.body;
+
+        if (!query) {
+            res.status(400).json({ error: "Query parameter 'query' is required" });
+            return;
+        }
+
+        const url = 'https://api.edamam.com/api/food-database/v2/parser';
+
+        // Fetch data from the Edamam API
         const response = await axios.get(url, {
             params: {
                 app_id: EDAMAM_APP_ID,
@@ -29,15 +40,21 @@ async function testAPI(query: string) {
             },
         });
 
-        console.log("Response Data:", response.data);
-        console.log("First Item:", response.data.hints[0]?.food);
-    } catch (error: unknown) {
-        if (error instanceof Error) {
-            console.error("Error making API request:", error.message);
+        // Return the API response to the client
+        res.status(200).json(response.data);
+    } catch (error: any) {
+        console.error("Error in POST /api/food-data:", error.message);
+
+        if (error.response) {
+            res.status(error.response.status).json({ error: error.response.data });
         } else {
-            console.error("An unknown error occurred");
+            res.status(500).json({ error: "An internal server error occurred" });
         }
     }
-}
+});
 
-testAPI('banana');
+// Start the server
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
