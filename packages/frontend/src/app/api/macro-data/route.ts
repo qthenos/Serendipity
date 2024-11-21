@@ -3,7 +3,6 @@ import bodyParser from 'body-parser';
 import axios from 'axios';
 import * as dotenv from 'dotenv';
 
-// Load environment variables
 dotenv.config({ path: '/Users/dakshesh/Serendipity/packages/frontend/.env' });
 
 const EDAMAM_APP_ID = process.env.EDAMAM_APP_ID;
@@ -13,13 +12,10 @@ if (!EDAMAM_APP_ID || !EDAMAM_APP_KEY) {
     throw new Error("Missing API credentials. Please check your .env file.");
 }
 
-// Initialize Express
 const app = express();
 
-// Middleware to parse JSON request bodies
 app.use(bodyParser.json());
 
-// Define the REST API endpoint
 app.post('/api/food-data', async (req: Request, res: Response): Promise<void> => {
     try {
         const { query } = req.body;
@@ -31,7 +27,6 @@ app.post('/api/food-data', async (req: Request, res: Response): Promise<void> =>
 
         const url = 'https://api.edamam.com/api/food-database/v2/parser';
 
-        // Fetch data from the Edamam API
         const response = await axios.get(url, {
             params: {
                 app_id: EDAMAM_APP_ID,
@@ -40,7 +35,6 @@ app.post('/api/food-data', async (req: Request, res: Response): Promise<void> =>
             },
         });
 
-        // Return the API response to the client
         res.status(200).json(response.data);
     } catch (error: any) {
         console.error("Error in POST /api/food-data:", error.message);
