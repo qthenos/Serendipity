@@ -18,63 +18,45 @@ import {
   ChartTooltip,
   ChartTooltipContent
 } from "@/components/ui/chart";
+import { fetchFoodData } from "@/data/food-data";
 
 export const description = "A donut chart with text";
 
-const chartData = [
-  {
-    meal: "breakfast",
-    calories: 400,
-    fill: "var(--color-breakfast)"
-  },
-  {
-    meal: "lunch",
-    calories: 1000,
-    fill: "var(--color-lunch)"
-  },
-  {
-    meal: "dinner",
-    calories: 1200,
-    fill: "var(--color-dinner"
-  },
-  {
-    meal: "snacks",
-    calories: 300,
-    fill: "var(--color-snacks)"
-  }
-];
-
-
-
-const chartConfig = {
-  calories: {
-    label: "Calories"
-  },
-  breakfast: {
-    label: "Breakfast",
-    color: "hsl(var(--chart-1))"
-  },
-  lunch: {
-    label: "Lunch",
-    color: "hsl(var(--chart-2))"
-  },
-  dinner: {
-    label: "Dinner",
-    color: "hsl(var(--chart-3))"
-  },
-  snacks: {
-    label: "Snacks",
-    color: "hsl(var(--chart-4))"
-  }
-} satisfies ChartConfig;
-
 export function CalorieWheel() {
+  const [chartData, setChartData] = React.useState([{"meal" : "breakfast", 'calories': 100}]);
+
+  React.useEffect(() => {
+    fetchFoodData().then((data) => setChartData(data.data));
+  }, []);
+
+  const chartConfig = {
+    calories: {
+      label: "Calories"
+    },
+    breakfast: {
+      label: "Breakfast",
+      color: "hsl(var(--chart-1))"
+    },
+    lunch: {
+      label: "Lunch",
+      color: "hsl(var(--chart-2))"
+    },
+    dinner: {
+      label: "Dinner",
+      color: "hsl(var(--chart-3))"
+    },
+    snacks: {
+      label: "Snacks",
+      color: "hsl(var(--chart-4))"
+    }
+  } satisfies ChartConfig;
+
   const totalVisitors = React.useMemo(() => {
     return chartData.reduce(
       (acc, curr) => acc + curr.calories,
       0
     );
-  }, []);
+  }, [chartData]);
 
   return (
     <Card className="flex flex-col">
@@ -96,7 +78,8 @@ export function CalorieWheel() {
               dataKey="calories"
               nameKey="meal"
               innerRadius={60}
-              strokeWidth={5}>
+              strokeWidth={5}
+            >
               <Label
                 content={({ viewBox }) => {
                   if (
