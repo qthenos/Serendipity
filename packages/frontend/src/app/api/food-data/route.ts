@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
+import { NextRequest } from "next/server";
+
 
 interface GroupedData {
     meal: string;
@@ -15,7 +17,6 @@ const colorData: Record<string, string> = {
     snacks: "var(--color-snacks)"
 };
 
-import { NextRequest } from "next/server";
 
 export const GET = async (req: NextRequest) => {
     const { searchParams } = new URL(req.url);
