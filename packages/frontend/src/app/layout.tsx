@@ -9,6 +9,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import SupabaseProvider from "../providers/SupabaseProvider";
 import UserProvider from "../providers/UserProvider";
+import { useState } from "react";
+import { DateProvider } from "@/contexts/date-context";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -42,15 +44,15 @@ export default function RootLayout({
               defaultTheme="system"
               enableSystem
               disableTransitionOnChange>
-              {/*<SidebarProvider>
-                <AppSidebar />
-                <main>
-                  {children}
-                </main>
-              </SidebarProvider> */}
-              <main>
-                {children}
-              </main>
+              <SidebarProvider>
+               <DateProvider>
+                  <AppSidebar/>
+                  <SidebarTrigger />
+                  <main>
+                    {children}
+                  </main>
+               </DateProvider>
+              </SidebarProvider>
             </ThemeProvider>
           </UserProvider>
         </SupabaseProvider>

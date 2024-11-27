@@ -2,11 +2,6 @@ import { NextResponse } from "next/server";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
-interface FoodData {
-    meal: string;
-    calories: number;
-}
-
 interface GroupedData {
     meal: string;
     calories: number;
@@ -20,15 +15,35 @@ const colorData: Record<string, string> = {
     snacks: "var(--color-snacks)"
 };
 
-export const GET = async () => {
+import { NextRequest } from "next/server";
+
+export const GET = async (req: NextRequest) => {
+    const { searchParams } = new URL(req.url);
+    let date = searchParams.get("date");
+
+    let startDate: Date;
+    let endDate: Date;
+
+    if (!date) {
+        startDate = new Date();
+        startDate.setUTCHours(0, 0, 0, 0);
+    } else {
+        startDate = new Date(date);
+        startDate.setUTCHours(0, 0, 0, 0);
+    }
+    endDate = new Date(startDate);
+    endDate.setUTCHours(23, 59, 59, 999);
+
     const supabase = createServerComponentClient({
         cookies: cookies
     });
 
     const { data, error } = await supabase
         .from('foodData')
-        .select(`meal, calories`);  
-
+        .select(`meal, calories`)
+        .gte('created_at', startDate.toISOString())
+        .lt('created_at', endDate.toISOString())
+        
     if (error) {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }

@@ -1,8 +1,6 @@
-import { useState, useEffect } from "react"
 
-
-export const fetchFoodData = () => {
-    const url = 'http://localhost:3000/api/food-data';
+export const fetchFoodData = (date: string) => {
+    const url = `http://localhost:3000/api/food-data?date=${date}`;
 
     return fetch(url)
         .then(response => {

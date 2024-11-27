@@ -19,15 +19,18 @@ import {
   ChartTooltipContent
 } from "@/components/ui/chart";
 import { fetchFoodData } from "@/data/food-data";
+import { useDate } from "@/contexts/date-context";
 
 export const description = "A donut chart with text";
 
 export function CalorieWheel() {
-  const [chartData, setChartData] = React.useState([{"meal" : "breakfast", 'calories': 100}]);
+  const [chartData, setChartData] = React.useState([{ "meal": "breakfast", 'calories': 0 }]);
+  const { date, setDate } = useDate();
 
+  const formattedDate = date.toISOString().split('T')[0];
   React.useEffect(() => {
-    fetchFoodData().then((data) => setChartData(data.data));
-  }, []);
+    fetchFoodData(formattedDate).then((data) => setChartData(data.data));
+  }, [formattedDate]);
 
   const chartConfig = {
     calories: {
@@ -51,6 +54,7 @@ export function CalorieWheel() {
     }
   } satisfies ChartConfig;
 
+  
   const totalVisitors = React.useMemo(() => {
     return chartData.reduce(
       (acc, curr) => acc + curr.calories,
@@ -122,4 +126,8 @@ export function CalorieWheel() {
       </CardFooter>
     </Card>
   );
+
+  return (
+    <div> Hello World</div>
+  )
 }
