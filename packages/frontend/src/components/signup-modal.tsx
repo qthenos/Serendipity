@@ -1,6 +1,5 @@
 "use client"
 
-import React, { useEffect } from "react"
 import { Auth } from "@supabase/auth-ui-react"
 import { ThemeSupa } from "@supabase/auth-ui-shared"
 import { useSessionContext, useSupabaseClient } from "@supabase/auth-helpers-react"
@@ -9,8 +8,8 @@ import { useRouter } from "next/navigation"
 
 
 const SignupModal = () => {
-  const { session } = useSessionContext()
-  const router = useRouter()
+  useSessionContext()
+  useRouter()
 
   const supabaseClient = useSupabaseClient()
 

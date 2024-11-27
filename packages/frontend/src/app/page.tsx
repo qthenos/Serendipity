@@ -2,7 +2,6 @@ import { CalorieWheel } from "@/components/calorie-wheel";
 import { MacroChart } from "@/components/macro-chart";
 import { ModeToggle } from "@/components/mode-toggle";
 import QuickAdd from "@/components/quick-add";
-import { AddMeal } from "@/components/add-meal";
 import { Toaster } from "@/components/ui/toaster";
 import { CalorieProgress } from "@/components/calorie-progress";
 import { WeightPlot } from "@/components/weight-plot";

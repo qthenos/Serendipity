@@ -1,9 +1,13 @@
+
 {
   "name": "serendipity",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npm -w packages/frontend run dev",
+    "start": "npm -w packages/frontend run start",
+    "build": "npm -w packages/frontend run build"
   },
   "author": "",
   "license": "ISC",
