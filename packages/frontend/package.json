@@ -33,11 +33,13 @@
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.46.1",
     "axios": "^1.7.7",
+    "body-parser": "^1.20.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
+    "express": "^4.21.1",
     "lucide-react": "^0.453.0",
     "next": "14.2.14",
     "next-themes": "^0.3.0",
@@ -52,6 +54,8 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/body-parser": "^1.19.5",
+    "@types/express": "^5.0.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
