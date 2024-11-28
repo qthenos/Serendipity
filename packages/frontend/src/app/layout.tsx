@@ -43,15 +43,11 @@ export default function RootLayout({
               defaultTheme="system"
               enableSystem
               disableTransitionOnChange>
-              <SidebarProvider>
                <DateProvider>
-                  <AppSidebar/>
-                  <SidebarTrigger />
                   <main>
                     {children}
                   </main>
                </DateProvider>
-              </SidebarProvider>
             </ThemeProvider>
           </UserProvider>
         </SupabaseProvider>
