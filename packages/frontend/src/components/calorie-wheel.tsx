@@ -18,63 +18,49 @@ import {
   ChartTooltip,
   ChartTooltipContent
 } from "@/components/ui/chart";
+import { fetchFoodData } from "@/data/food-data";
+import { useDate } from "@/contexts/date-context";
 
 export const description = "A donut chart with text";
 
-const chartData = [
-  {
-    meal: "breakfast",
-    calories: 400,
-    fill: "var(--color-breakfast)"
-  },
-  {
-    meal: "lunch",
-    calories: 1000,
-    fill: "var(--color-lunch)"
-  },
-  {
-    meal: "dinner",
-    calories: 1200,
-    fill: "var(--color-dinner"
-  },
-  {
-    meal: "snacks",
-    calories: 300,
-    fill: "var(--color-snacks)"
-  }
-];
-
-
-
-const chartConfig = {
-  calories: {
-    label: "Calories"
-  },
-  breakfast: {
-    label: "Breakfast",
-    color: "hsl(var(--chart-1))"
-  },
-  lunch: {
-    label: "Lunch",
-    color: "hsl(var(--chart-2))"
-  },
-  dinner: {
-    label: "Dinner",
-    color: "hsl(var(--chart-3))"
-  },
-  snacks: {
-    label: "Snacks",
-    color: "hsl(var(--chart-4))"
-  }
-} satisfies ChartConfig;
-
 export function CalorieWheel() {
+  const [chartData, setChartData] = React.useState([{ "meal": "breakfast", 'calories': 0 }]);
+  const { date, setDate } = useDate();
+
+  const formattedDate = date.toISOString().split('T')[0];
+  React.useEffect(() => {
+    fetchFoodData(formattedDate).then((data) => setChartData(data.data));
+  }, [formattedDate]);
+
+  const chartConfig = {
+    calories: {
+      label: "Calories"
+    },
+    breakfast: {
+      label: "Breakfast",
+      color: "hsl(var(--chart-1))"
+    },
+    lunch: {
+      label: "Lunch",
+      color: "hsl(var(--chart-2))"
+    },
+    dinner: {
+      label: "Dinner",
+      color: "hsl(var(--chart-3))"
+    },
+    snacks: {
+      label: "Snacks",
+      color: "hsl(var(--chart-4))"
+    }
+  } satisfies ChartConfig;
+
+  
   const totalVisitors = React.useMemo(() => {
     return chartData.reduce(
       (acc, curr) => acc + curr.calories,
       0
     );
-  }, []);
+  }, [chartData]);
 
   return (
     <Card className="flex flex-col">
@@ -96,7 +82,8 @@ export function CalorieWheel() {
               dataKey="calories"
               nameKey="meal"
               innerRadius={60}
-              strokeWidth={5}>
+              strokeWidth={5}
+            >
               <Label
                 content={({ viewBox }) => {
                   if (
@@ -133,10 +120,14 @@ export function CalorieWheel() {
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 font-medium leading-none">
-          Congrats! You have lost 1.5 pounds this month
+          Congrats! You've lost 1.5 pounds this month
           <TrendingDown className="h-4 w-4" />
         </div>
       </CardFooter>
     </Card>
   );
+
+  return (
+    <div> Hello World</div>
+  )
 }
