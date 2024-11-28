@@ -25,7 +25,7 @@ export const description = "A donut chart with text";
 
 export function CalorieWheel() {
   const [chartData, setChartData] = React.useState([{ "meal": "breakfast", 'calories': 0 }]);
-  const { date, setDate } = useDate();
+  const { date } = useDate();
 
   const formattedDate = date.toISOString().split('T')[0];
   React.useEffect(() => {
@@ -120,14 +120,10 @@ export function CalorieWheel() {
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 font-medium leading-none">
-          Congrats! You've lost 1.5 pounds this month
+          Congrats! You have lost 1.5 pounds this month
           <TrendingDown className="h-4 w-4" />
         </div>
       </CardFooter>
     </Card>
   );
-
-  return (
-    <div> Hello World</div>
-  )
 }

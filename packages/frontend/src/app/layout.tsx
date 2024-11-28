@@ -9,7 +9,6 @@ import localFont from "next/font/local";
 import "./globals.css";
 import SupabaseProvider from "../providers/SupabaseProvider";
 import UserProvider from "../providers/UserProvider";
-import { useState } from "react";
 import { DateProvider } from "@/contexts/date-context";
 
 const geistSans = localFont({
