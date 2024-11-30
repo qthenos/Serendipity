@@ -1,15 +1,20 @@
 import { NextResponse } from "next/server";
-import axios from "axios";  
+import axios from "axios";
 
 const EDAMAM_APP_ID = process.env.EDAMAM_APP_ID;
 const EDAMAM_APP_KEY = process.env.EDAMAM_APP_KEY;
 
-if (!EDAMAM_APP_ID || !EDAMAM_APP_KEY) {
-    throw new Error("Missing API credentials. Please check your .env file.");
-}
-
 export const GET = async (req: Request) => {
     try {
+        // Check environment variables inside the handler
+        if (!EDAMAM_APP_ID || !EDAMAM_APP_KEY) {
+            return NextResponse.json(
+                { error: "Missing API credentials. Please check your .env file." },
+                { status: 500 }
+            );
+        }
+
+        // Extract the query parameter
         const url = new URL(req.url);
         const query = url.searchParams.get("query");
 
@@ -20,8 +25,8 @@ export const GET = async (req: Request) => {
             );
         }
 
+        // Call the Edamam API
         const apiUrl = "https://api.edamam.com/api/food-database/v2/parser";
-
         const response = await axios.get(apiUrl, {
             params: {
                 app_id: EDAMAM_APP_ID,
@@ -30,17 +35,20 @@ export const GET = async (req: Request) => {
             },
         });
 
+        // Return the API response
         return NextResponse.json(response.data, { status: 200 });
-    } catch (error: any) {
-        console.error("Error in GET /api/macro-data:", error.message);
-
-        if (error.response) {
+    } catch (error) {
+        // Handle Axios-specific errors
+        if (axios.isAxiosError(error)) {
+            console.error("Axios error:", error.message);
             return NextResponse.json(
-                { error: error.response.data },
-                { status: error.response.status }
+                { error: error.response?.data || "An error occurred with the API" },
+                { status: error.response?.status || 500 }
             );
         }
 
+        // Handle unexpected errors
+        console.error("Unexpected error:", error);
         return NextResponse.json(
             { error: "An internal server error occurred" },
             { status: 500 }
