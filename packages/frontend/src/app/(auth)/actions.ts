@@ -32,10 +32,15 @@ export async function signup(formData: FormData) {
   // in practice, you should validate your inputs
   const data = {
     email: formData.get('email') as string,
-    password: formData.get('password') as string,
   }
 
-  const { error } = await supabase.auth.signUp(data)
+  const { error } = await supabase.auth.signInWithOtp({
+    email: data.email,
+    options: {
+      shouldCreateUser: false,
+      emailRedirectTo: '/', // Redirect to the root path
+    },
+  })
 
   if (error) {
     redirect('/error')
