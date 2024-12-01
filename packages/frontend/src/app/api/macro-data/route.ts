@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import axios from "axios";
 
 const EDAMAM_APP_ID = process.env.EDAMAM_APP_ID;
 const EDAMAM_APP_KEY = process.env.EDAMAM_APP_KEY;
@@ -25,28 +24,23 @@ export const GET = async (req: Request) => {
             );
         }
 
-        // Call the Edamam API
-        const apiUrl = "https://api.edamam.com/api/food-database/v2/parser";
-        const response = await axios.get(apiUrl, {
-            params: {
-                app_id: EDAMAM_APP_ID,
-                app_key: EDAMAM_APP_KEY,
-                ingr: query,
-            },
-        });
+        // Call the Edamam API using fetch
+        const apiUrl = `https://api.edamam.com/api/food-database/v2/parser?app_id=${EDAMAM_APP_ID}&app_key=${EDAMAM_APP_KEY}&ingr=${encodeURIComponent(query)}`;
+        const response = await fetch(apiUrl);
 
-        // Return the API response
-        return NextResponse.json(response.data, { status: 200 });
-    } catch (error) {
-        // Handle Axios-specific errors
-        if (axios.isAxiosError(error)) {
-            console.error("Axios error:", error.message);
+        if (!response.ok) {
+            const errorData = await response.json();
             return NextResponse.json(
-                { error: error.response?.data || "An error occurred with the API" },
-                { status: error.response?.status || 500 }
+                { error: errorData || "An error occurred with the API" },
+                { status: response.status }
             );
         }
 
+        const data = await response.json();
+
+        // Return the API response
+        return NextResponse.json(data, { status: 200 });
+    } catch (error) {
         // Handle unexpected errors
         console.error("Unexpected error:", error);
         return NextResponse.json(
