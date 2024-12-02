@@ -17,43 +17,47 @@ const colorData: Record<string, string> = {
 };
 
 export const GET = async (req: NextRequest) => {
-  const { searchParams } = new URL(req.url);
-  const date = searchParams.get("date");
+  try {
+    const { searchParams } = new URL(req.url);
+    const date = searchParams.get("date");
 
-  const startDate = new Date(date || Date.now());
-  startDate.setUTCHours(0, 0, 0, 0);
+    const startDate = new Date(date || Date.now());
+    startDate.setUTCHours(0, 0, 0, 0);
 
-  const endDate = new Date(startDate);
-  endDate.setUTCHours(23, 59, 59, 999);
+    const endDate = new Date(startDate);
+    endDate.setUTCHours(23, 59, 59, 999);
 
-  const supabase = createServerComponentClient({
-    cookies: cookies,
-  });
+    const supabase = createServerComponentClient({
+      cookies: cookies,
+    });
 
-  const { data, error } = await supabase
-    .from("foodData")
-    .select("meal, calories")
-    .gte("created_at", startDate.toISOString())
-    .lt("created_at", endDate.toISOString());
+    const { data, error } = await supabase
+      .from("foodData")
+      .select("meal, calories")
+      .gte("created_at", startDate.toISOString())
+      .lt("created_at", endDate.toISOString());
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    const groupedData: GroupedData[] = data.reduce((acc, { meal, calories }) => {
+      const existing = acc.find(item => item.meal === meal);
+      if (existing) {
+        existing.calories += calories;
+      } else {
+        acc.push({
+          meal,
+          calories,
+          fill: colorData[meal] || "",
+        });
+      }
+      return acc;
+    }, [] as GroupedData[]);
+
+    return NextResponse.json({ data: groupedData });
+  } catch (error) {
+    console.error("Error fetching food data:", error);
+    return NextResponse.json({ error: "An internal server error occurred" }, { status: 500 });
   }
-
-  const groupedData: Record<string, number> = {};
-
-  data.forEach((item) => {
-    const { meal, calories } = item;
-    groupedData[meal] = (groupedData[meal] || 0) + calories;
-  });
-
-  const result: GroupedData[] = Object.entries(groupedData).map(
-    ([meal, calories]) => ({
-      meal,
-      calories,
-      fill: colorData[meal] || "",
-    })
-  );
-
-  return NextResponse.json({ data: result });
 };
