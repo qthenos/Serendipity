@@ -1,10 +1,5 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
-import { AppSidebar } from "@/components/app-sidebar";
-import {
-  SidebarProvider,
-  SidebarTrigger
-} from "@/components/ui/sidebar";
 import localFont from "next/font/local";
 import "./globals.css";
 import SupabaseProvider from "../providers/SupabaseProvider";
