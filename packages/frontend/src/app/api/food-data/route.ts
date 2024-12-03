@@ -17,47 +17,94 @@ const colorData: Record<string, string> = {
 };
 
 export const GET = async (req: NextRequest) => {
+  const { searchParams } = new URL(req.url);
+  const date = searchParams.get("date");
+
+  const startDate = new Date(date || Date.now());
+  startDate.setUTCHours(0, 0, 0, 0);
+
+  const endDate = new Date(startDate);
+  endDate.setUTCHours(23, 59, 59, 999);
+
+  const supabase = createServerComponentClient({
+    cookies: cookies,
+  });
+
+  const { data, error } = await supabase
+    .from("foodData")
+    .select("meal, calories")
+    .gte("created_at", startDate.toISOString())
+    .lt("created_at", endDate.toISOString());
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  const groupedData: Record<string, number> = {};
+
+  data.forEach((item) => {
+    const { meal, calories } = item;
+    groupedData[meal] = (groupedData[meal] || 0) + calories;
+  });
+
+  const result: GroupedData[] = Object.entries(groupedData).map(
+    ([meal, calories]) => ({
+      meal,
+      calories,
+      fill: colorData[meal] || "",
+    })
+  );
+
+  return NextResponse.json({ data: result });
+};
+
+export const POST = async (req: NextRequest) => {
+  const supabase = createServerComponentClient({
+    cookies: cookies,
+  });
+
   try {
-    const { searchParams } = new URL(req.url);
-    const date = searchParams.get("date");
+    // Parse the JSON body from the request
+    const body = await req.json();
+    const { meal, calories, created_at } = body;
 
-    const startDate = new Date(date || Date.now());
-    startDate.setUTCHours(0, 0, 0, 0);
+    // Validate the incoming data
+    if (!meal || typeof meal !== "string") {
+      return NextResponse.json(
+        { error: "Invalid or missing 'meal' field." },
+        { status: 400 }
+      );
+    }
 
-    const endDate = new Date(startDate);
-    endDate.setUTCHours(23, 59, 59, 999);
+    if (!calories || typeof calories !== "number") {
+      return NextResponse.json(
+        { error: "Invalid or missing 'calories' field." },
+        { status: 400 }
+      );
+    }
 
-    const supabase = createServerComponentClient({
-      cookies: cookies,
-    });
+    const newEntry = {
+      meal,
+      calories,
+      created_at: created_at || new Date().toISOString(), // Use provided or current timestamp
+    };
 
-    const { data, error } = await supabase
-      .from("foodData")
-      .select("meal, calories")
-      .gte("created_at", startDate.toISOString())
-      .lt("created_at", endDate.toISOString());
+    // Insert the new entry into the 'foodData' table
+    const { data, error } = await supabase.from("foodData").insert(newEntry);
 
     if (error) {
       throw new Error(error.message);
     }
 
-    const groupedData: GroupedData[] = data.reduce((acc, { meal, calories }) => {
-      const existing = acc.find(item => item.meal === meal);
-      if (existing) {
-        existing.calories += calories;
-      } else {
-        acc.push({
-          meal,
-          calories,
-          fill: colorData[meal] || "",
-        });
-      }
-      return acc;
-    }, [] as GroupedData[]);
-
-    return NextResponse.json({ data: groupedData });
-  } catch (error) {
-    console.error("Error fetching food data:", error);
-    return NextResponse.json({ error: "An internal server error occurred" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Data inserted successfully!", data },
+      { status: 201 }
+    );
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
+    return NextResponse.json(
+      { error: errorMessage },
+      { status: 500 } 
+    );
   }
 };
