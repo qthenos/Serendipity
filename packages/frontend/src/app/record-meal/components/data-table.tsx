@@ -12,9 +12,10 @@ import { flexRender, type Table as ReactTable } from "@tanstack/react-table"
 interface FoodTableProps {
     table: ReactTable<any>;
     columns: Array<any>;
+    onChange: () => void;
 }
 
-export default function DataTable({ table, columns }: FoodTableProps) {
+export default function DataTable({ table, columns, onChange }: FoodTableProps) {
     return (
         <div className="rounded-md border">
             <Table>
@@ -40,6 +41,10 @@ export default function DataTable({ table, columns }: FoodTableProps) {
                             <TableRow
                                 key={row.id}
                                 data-state={row.getIsSelected() && "selected"}
+                                onClick={() => {
+                                    row.toggleSelected();
+                                    onChange();
+                                }}
                             >
                                 {row.getVisibleCells().map((cell) => (
                                     <TableCell key={cell.id}>
@@ -55,7 +60,7 @@ export default function DataTable({ table, columns }: FoodTableProps) {
                         <TableRow>
                             <TableCell
                                 colSpan={columns.length}
-                                className="h-24 text-center"
+                                className="h-[32rem] text-center"
                             >
                                 No results.
                             </TableCell>

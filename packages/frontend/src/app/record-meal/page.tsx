@@ -2,34 +2,29 @@
 
 import * as React from "react"
 import {
-    ColumnDef,
     ColumnFiltersState,
     SortingState,
     VisibilityState,
-    flexRender,
     getCoreRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
-
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import ColumnVisibilityDropdown from "./components/dropdown-menu"
+import ColumnVisibilityDropdown from "./components/column-filter"
 import DataTable from "./components/data-table"
 import PaginationControls from "./components/pagination-controls"
 import { SearchBar, FilterBar } from "./components/search-filter"
+import { columns } from "./components/column-config"
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable"
+import { Input } from "@/components/ui/input"
+import { Separator } from "@/components/ui/separator"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Button } from "@/components/ui/button"
+import { Select, SelectItem, SelectLabel, SelectGroup, SelectContent, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/app-sidebar"
+import MealDropdown from "./components/meal-dropdown"
 
 export type FoodItem = {
     label: string
@@ -38,112 +33,18 @@ export type FoodItem = {
     FAT: number
     CHOCDF: number
     FIBTG: number
+    quantity: number // Added quantity field
 }
 
-export const columns: ColumnDef<FoodItem>[] = [
-    {
-        id: "select",
-        header: ({ table }) => (
-            <Checkbox
-                checked={
-                    table.getIsAllPageRowsSelected() ||
-                    (table.getIsSomePageRowsSelected() && "indeterminate")
-                }
-                onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                aria-label="Select all"
-            />
-        ),
-        cell: ({ row }) => (
-            <Checkbox
-                checked={row.getIsSelected()}
-                onCheckedChange={(value) => row.toggleSelected(!!value)}
-                aria-label="Select row"
-            />
-        ),
-        enableSorting: false,
-        enableHiding: false,
-    },
-    {
-        accessorKey: "label",
-        header: "Food",
-        cell: ({ row }) => (
-            <div className="capitalize">{row.getValue("label")}</div>
-        ),
-    },
-    {
-        accessorKey: "ENERC_KCAL",
-        header: "Calories",
-        cell: ({ row }) => {
-            const value = row.getValue("ENERC_KCAL");
-            return <div>{typeof value === 'number' ? `${value.toFixed(2)}g` : <span className="text-gray-400">N/A</span>}</div>;
-        },
-    },
-    {
-        accessorKey: "PROCNT",
-        header: "Protein",
-        cell: ({ row }) => {
-            const value = row.getValue("PROCNT");
-            return <div>{typeof value === 'number' ? `${value.toFixed(2)}g` : <span className="text-gray-400">N/A</span>}</div>;
-        },
-    },
-    {
-        accessorKey: "FAT",
-        header: "Fat",
-        cell: ({ row }) => {
-            const value = row.getValue("FAT");
-            return <div>{typeof value === 'number' ? `${value.toFixed(2)}g` : <span className="text-gray-400">N/A</span>}</div>;
-        },
-    },
-    {
-        accessorKey: "CHOCDF",
-        header: "Carbs",
-        cell: ({ row }) => {
-            const value = row.getValue("CHOCDF");
-            return <div>{typeof value === 'number' ? `${value.toFixed(2)}g` : <span className="text-gray-400">N/A</span>}</div>;
-        },
-    },
-    {
-        accessorKey: "FIBTG",
-        header: "Fiber",
-        cell: ({ row }) => {
-            const value = row.getValue("FIBTG");
-            return <div>{typeof value === 'number' ? `${value.toFixed(2)}g` : <span className="text-gray-400">N/A</span>}</div>;
-        },
-    },
-    {
-        id: "actions",
-        enableHiding: false,
-        cell: ({ row }) => {
-            const foodItem = row.original
-
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(foodItem.label)}
-                        >
-                            Copy food name
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>View details</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            )
-        },
-    },
-]
-
 export default function Page() {
-    
     const [data, setData] = React.useState<FoodItem[]>([])
     const [searchTerm, setSearchTerm] = React.useState<string>("")
+    const [selectedItems, setSelectedItems] = React.useState<FoodItem[]>([]);
+    const [rowSelection, setRowSelection] = React.useState({})
+    const [sorting, setSorting] = React.useState<SortingState>([])
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+    const [columnVisibility, setColumnVisibility] =
+        React.useState<VisibilityState>({})
 
     const fetchData = async (query: string) => {
         try {
@@ -159,29 +60,38 @@ export default function Page() {
                 FAT: hint.food.nutrients.FAT,
                 CHOCDF: hint.food.nutrients.CHOCDF,
                 FIBTG: hint.food.nutrients.FIBTG,
+                quantity: 1 // Default quantity to 1
             }))
             setData(foodItems)
         } catch (error) {
             console.error('Error fetching data:', error)
         }
     }
-
     React.useEffect(() => {
         fetchData("")
     }, [])
 
     const handleSearchSubmit = (event: React.FormEvent) => {
         event.preventDefault()
+        setRowSelection({});
         fetchData(searchTerm)
     }
 
-    const [sorting, setSorting] = React.useState<SortingState>([])
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-        []
-    )
-    const [columnVisibility, setColumnVisibility] =
-        React.useState<VisibilityState>({})
-    const [rowSelection, setRowSelection] = React.useState({})
+    React.useEffect(() => {
+        const newSelectedItems = Object.keys(rowSelection)
+            .filter((key) => rowSelection[key as keyof typeof rowSelection])
+            .map((key) => data[parseInt(key)]);
+
+        // Merge new selections with existing ones, avoiding duplicates
+        const updatedSelectedItems = [...selectedItems, ...newSelectedItems].reduce((acc, item) => {
+            if (!acc.some(existingItem => existingItem.label === item.label)) {
+                acc.push(item);
+            }
+            return acc;
+        }, [] as FoodItem[]);
+
+        setSelectedItems(updatedSelectedItems);
+    }, [rowSelection]);
 
     const table = useReactTable({
         data,
@@ -202,22 +112,97 @@ export default function Page() {
         },
     })
 
-    return (
-        <div className="w-full p-8">
-            <div className="py-2">
-                <SearchBar
-                    searchTerm={searchTerm}
-                    setSearchTerm={setSearchTerm}
-                    handleSearchSubmit={handleSearchSubmit}
-                />
-            </div>
-            <div className="flex space-x-4 py-2">
+    const addFoodItem = () => {
+        const newSelectedItems = Object.keys(rowSelection)
+            .filter((key) => rowSelection[key as keyof typeof rowSelection])
+            .map((key) => data[parseInt(key)]);
 
-                <FilterBar table={table} />
-                <ColumnVisibilityDropdown table={table} />
-            </div>
-            <DataTable table={table} columns={columns} />
-            <PaginationControls table={table} />
-        </div>
+        // Merge new selections with existing ones, avoiding duplicates
+        const updatedSelectedItems = [...selectedItems, ...newSelectedItems].reduce((acc, item) => {
+            if (!acc.some(existingItem => existingItem.label === item.label)) {
+                acc.push(item);
+            }
+            return acc;
+        }, [] as FoodItem[]);
+
+        setSelectedItems(updatedSelectedItems);
+    }
+
+    const handleQuantityChange = (label: string, quantity: number) => {
+        setSelectedItems(prevItems =>
+            prevItems.map(item =>
+                item.label === label ? { ...item, quantity } : item
+            )
+                .filter(item => item.quantity > 0)
+        );
+    }
+
+    return (
+        <SidebarProvider>
+            <AppSidebar />
+            <SidebarTrigger />
+            <ResizablePanelGroup direction="horizontal">
+                <ResizablePanel minSize={40}>
+                    <div className="w-full p-8 ">
+                        <p className="mb-4 text-large font-bold leading-none">Add Food Items</p>
+                        <Separator className="my-2" />
+                        <div className="py-2">
+                            <SearchBar
+                                searchTerm={searchTerm}
+                                setSearchTerm={setSearchTerm}
+                                handleSearchSubmit={handleSearchSubmit}
+                            />
+                        </div>
+                        <div className="flex py-2">
+                            <div className="flex-grow">
+                                <FilterBar table={table} />
+                            </div>
+                            <div className="flex-none">
+                                <ColumnVisibilityDropdown table={table} />
+                            </div>
+                        </div>
+                        <DataTable table={table} columns={columns} onChange={addFoodItem} />
+                        <PaginationControls table={table} />
+                    </div>
+                </ResizablePanel>
+                <ResizableHandle withHandle />
+                <ResizablePanel minSize={20} className="p-8">
+                    <p className="mb-4 text-large font-bold leading-none">Added Food Items</p>
+                    <Separator className="my-2" />
+                    <MealDropdown />
+                  
+                    <div className="flex flex-col h-full min-w-6">
+                        <ScrollArea className="h-[38rem] w-full rounded-md border my-4 ">
+                            <div className="p-4">
+                                {selectedItems.map((item) => (
+                                    <>
+                                        <div className="flex justify-between items-center space-x-4">
+                                            <div key={item.label} className="text-sm mx-2">
+                                                {item.label}
+                                                <br />
+                                                <div className="text-gray-400">{item.ENERC_KCAL.toFixed(0)} cal</div>
+                                            </div>
+                                            <div className="flex items-center">
+                                                <p className="text-sm">Count: </p>
+                                                <Input type="number" defaultValue={1} className="ml-2 w-[3rem]" onChange={(e) => handleQuantityChange(item.label, parseInt(e.target.value, 10))} />
+                                            </div>
+                                        </div>
+                                        <Separator className="my-2" />
+                                    </>
+                                ))}
+                            </div>
+                        </ScrollArea>
+                        <div className="space-x-4 *:">
+                            <Button type="reset" variant={"destructive"} onClick={() => {
+                                setSelectedItems([]);
+                                setRowSelection({});
+                            }}>Clear</Button>
+                            <Button type="submit">Submit</Button>
+                        </div>
+                    </div>
+                 
+                </ResizablePanel>
+            </ResizablePanelGroup>
+        </SidebarProvider>
     )
 }
