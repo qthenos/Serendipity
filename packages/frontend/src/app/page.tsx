@@ -20,7 +20,7 @@ export default function Home() {
         <div className="flex-1 flex flex-col p-8 sm:p-20 font-[family-name:var(--font-geist-sans)]">
           <div className="flex justify-between items-center mb-8">
             <ModeToggle />
-            <Link href="/account">
+            <Link href="/account/profile">
               <Button>My Account</Button>
             </Link>
           </div>
