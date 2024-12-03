@@ -66,7 +66,7 @@ export function CalorieWheel() {
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
         <CardTitle>Calorie Breakdown</CardTitle>
-        <CardDescription>{formattedDate}</CardDescription>
+        <CardDescription>{new Date(formattedDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer

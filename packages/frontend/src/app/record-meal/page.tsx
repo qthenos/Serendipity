@@ -21,7 +21,6 @@ import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
-import { Select, SelectItem, SelectLabel, SelectGroup, SelectContent, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import MealDropdown from "./components/meal-dropdown"
@@ -137,6 +136,39 @@ export default function Page() {
         );
     }
 
+    const onClick = async () => {
+        try {
+            const response = await fetch('/api/food-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(selectedItems.map(item => ({
+                    meal: item.label,
+                    calories: item.ENERC_KCAL * item.quantity,
+                    protein: item.PROCNT * item.quantity,
+                    fat: item.FAT * item.quantity,
+                    carbs: item.CHOCDF * item.quantity,
+                    fiber: item.FIBTG * item.quantity,
+                    created_at: new Date().toISOString(),
+                }))),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Error inserting data:', errorData.error);
+                return;
+            }
+
+            const responseData = await response.json();
+            console.log('Data inserted successfully:', responseData);
+        } catch (error) {
+            console.error('An error occurred while submitting data:', error);
+        }
+    }
+    
+     
+
     return (
         <SidebarProvider>
             <AppSidebar />
@@ -197,7 +229,7 @@ export default function Page() {
                                 setSelectedItems([]);
                                 setRowSelection({});
                             }}>Clear</Button>
-                            <Button type="submit">Submit</Button>
+                            <Button type="submit" onClick={onClick}>Submit</Button>
                         </div>
                     </div>
                  
