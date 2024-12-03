@@ -101,9 +101,10 @@ export const POST = async (req: NextRequest) => {
       { status: 201 }
     );
   } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
     return NextResponse.json(
-      { error: error || "An unknown error occurred." },
-      { status: 500 }
+      { error: errorMessage },
+      { status: 500 } 
     );
   }
 };
