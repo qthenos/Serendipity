@@ -100,9 +100,9 @@ export const POST = async (req: NextRequest) => {
       { message: "Data inserted successfully!", data },
       { status: 201 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { error: error.message || "An unknown error occurred." },
+      { error: error || "An unknown error occurred." },
       { status: 500 }
     );
   }
