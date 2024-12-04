@@ -1,6 +1,6 @@
 
-export const fetchFoodData = (date: string) => {
-    const url = `/api/charts/food-data?date=${date}`;
+export const fetchCalorieData = (date: string) => {
+    const url = `/api/calorie-data?date=${date}`;
 
     return fetch(url)
         .then(response => {

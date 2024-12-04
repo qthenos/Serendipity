@@ -130,8 +130,7 @@ export function CalorieWheel() {
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 font-medium leading-none">
-          Congrats! You have lost 1.5 pounds this month
-          <TrendingDown className="h-4 w-4" />
+          Good eating today! Keep it up!
         </div>
       </CardFooter>
     </Card>

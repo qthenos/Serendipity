@@ -24,8 +24,8 @@ export default function ColumnVisibilityDropdown({ table }: ColumnVisibilityDrop
             <DropdownMenuContent align="end">
                 {table
                     .getAllColumns()
-                    .filter((column: Column<any, any>) => column.getCanHide())
-                    .map((column: Column<any, any>) => (
+                    .filter((column: Column<unknown, unknown>) => column.getCanHide())
+                    .map((column: Column<unknown, unknown>) => (
                         <DropdownMenuCheckboxItem
                             key={column.id}
                             className="capitalize"

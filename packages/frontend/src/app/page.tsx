@@ -33,14 +33,11 @@ export default function Home() {
             <hr className="border-t border-gray-300" />
             <section>
               <h1 className="text-2xl font-bold mb-4">Track Your Progress</h1>
-              <DateAggregation />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="col-span-2 row-span-2">
                 <CalorieProgress />
-                <WeightPlot />
               </div>
             </section>
           </div>
-          <QuickAdd />
           <Toaster />
         </div>
       </div>
