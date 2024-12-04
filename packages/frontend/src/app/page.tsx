@@ -6,8 +6,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { CalorieProgress } from "@/components/calorie-progress";
 import { WeightPlot } from "@/components/weight-plot";
 import { DateAggregation } from "@/components/date-aggreation";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 

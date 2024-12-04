@@ -54,7 +54,7 @@ export default function Page() {
                 throw new Error('Network response was not ok')
             }
             const result = await response.json()
-            const foodItems = result.hints.map((hint: any) => ({
+            const foodItems = result.hints.map((hint: { food: { label: string, nutrients: { ENERC_KCAL: number, PROCNT: number, FAT: number, CHOCDF: number, FIBTG: number } } }) => ({
                 label: hint.food.label,
                 ENERC_KCAL: hint.food.nutrients.ENERC_KCAL,
                 PROCNT: hint.food.nutrients.PROCNT,

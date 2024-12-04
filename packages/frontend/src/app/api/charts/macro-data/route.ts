@@ -14,7 +14,7 @@ export const GET = async (req: NextRequest) => {
 
         const supabase = await createClient();
 
-        const { data, error } = await supabase.rpc('get_macro_data').eq("date", date);
+        const { data } = await supabase.rpc('get_macro_data').eq("date", date);
         return NextResponse.json({ date, data });
     }
     catch (error) {

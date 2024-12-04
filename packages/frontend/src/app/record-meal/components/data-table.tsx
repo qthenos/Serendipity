@@ -7,11 +7,12 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { flexRender, type Table as ReactTable } from "@tanstack/react-table"
+import { ColumnDef, flexRender, type Table as ReactTable } from "@tanstack/react-table"
+import { FoodItem } from "./column-config";
 
 interface FoodTableProps {
-    table: ReactTable<any>;
-    columns: Array<any>;
+    table: ReactTable<FoodItem>;
+    columns: ColumnDef<FoodItem>[];
     onChange: () => void;
 }
 

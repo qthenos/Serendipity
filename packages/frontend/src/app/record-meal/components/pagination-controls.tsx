@@ -1,9 +1,10 @@
 import React from "react"
 import { Button } from "@/components/ui/button"
 import { type Table as ReactTable } from "@tanstack/react-table"
+import { FoodItem } from "./column-config";
 
 interface PaginationControlsProps {
-    table: ReactTable<any>;
+    table: ReactTable<FoodItem>;
 }
 
 export default function PaginationControls({ table }: PaginationControlsProps) {
