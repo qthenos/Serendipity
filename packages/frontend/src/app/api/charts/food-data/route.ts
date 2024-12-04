@@ -23,7 +23,7 @@ export const GET = async (req: NextRequest) => {
 
   const result = data.map((meal: { meal: string }) => ({
     ...meal,
-    color: colorData[meal.meal] || "var(--color-default)"
+    fill: colorData[meal.meal] || "var(--color-default)"
   }));
 
   return NextResponse.json({data: result });

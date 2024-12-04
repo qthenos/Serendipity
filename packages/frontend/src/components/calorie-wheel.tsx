@@ -29,7 +29,13 @@ export function CalorieWheel() {
 
   const formattedDate = date.toISOString().split('T')[0];
   React.useEffect(() => {
-    fetchFoodData(formattedDate).then((data) => setChartData(data.data));
+    fetchFoodData(formattedDate).then((data) => {
+      if (data && data.data && data.data.length > 0) {
+        setChartData(data.data);
+      } else {
+        setChartData([]);
+      }
+    });
   }, [formattedDate]);
 
   const chartConfig = {
@@ -55,7 +61,7 @@ export function CalorieWheel() {
   } satisfies ChartConfig;
 
   
-  const totalVisitors = React.useMemo(() => {
+  const totalCalories = React.useMemo(() => {
     return chartData.reduce(
       (acc, curr) => acc + curr.calories,
       0
@@ -66,57 +72,61 @@ export function CalorieWheel() {
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
         <CardTitle>Calorie Breakdown</CardTitle>
-        <CardDescription>{new Date(formattedDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</CardDescription>
+        <CardDescription>{date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
-        <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]">
-          <PieChart>
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Pie
-              data={chartData}
-              dataKey="calories"
-              nameKey="meal"
-              innerRadius={60}
-              strokeWidth={5}
-            >
-              <Label
-                content={({ viewBox }) => {
-                  if (
-                    viewBox &&
-                    "cx" in viewBox &&
-                    "cy" in viewBox
-                  ) {
-                    return (
-                      <text
-                        x={viewBox.cx}
-                        y={viewBox.cy}
-                        textAnchor="middle"
-                        dominantBaseline="middle">
-                        <tspan
+        {chartData.length > 0 ? (
+          <ChartContainer
+            config={chartConfig}
+            className="mx-auto aspect-square max-h-[250px]">
+            <PieChart>
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent hideLabel />}
+              />
+              <Pie
+                data={chartData}
+                dataKey="calories"
+                nameKey="meal"
+                innerRadius={60}
+                strokeWidth={5}
+              >
+                <Label
+                  content={({ viewBox }) => {
+                    if (
+                      viewBox &&
+                      "cx" in viewBox &&
+                      "cy" in viewBox
+                    ) {
+                      return (
+                        <text
                           x={viewBox.cx}
                           y={viewBox.cy}
-                          className="fill-foreground text-3xl font-bold">
-                          {totalVisitors.toLocaleString()}
-                        </tspan>
-                        <tspan
-                          x={viewBox.cx}
-                          y={(viewBox.cy || 0) + 24}
-                          className="fill-muted-foreground">
-                          Calories
-                        </tspan>
-                      </text>
-                    );
-                  }
-                }}
-              />
-            </Pie>
-          </PieChart>
-        </ChartContainer>
+                          textAnchor="middle"
+                          dominantBaseline="middle">
+                          <tspan
+                            x={viewBox.cx}
+                            y={viewBox.cy}
+                            className="fill-foreground text-3xl font-bold">
+                            {totalCalories}
+                          </tspan>
+                          <tspan
+                            x={viewBox.cx}
+                            y={(viewBox.cy || 0) + 24}
+                            className="fill-muted-foreground">
+                            Calories
+                          </tspan>
+                        </text>
+                      );
+                    }
+                  }}
+                />
+              </Pie>
+            </PieChart>
+          </ChartContainer>
+        ) : (
+          <div className="flex justify-center items-center h-full text-lg font-medium">No Data</div>
+        )}
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 font-medium leading-none">
