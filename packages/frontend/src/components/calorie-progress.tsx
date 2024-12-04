@@ -23,34 +23,51 @@ import {
   ChartTooltip,
   ChartTooltipContent
 } from "@/components/ui/chart";
+import React from "react";
 
 export const description = "A bar chart with negative values";
 
-const chartData = [
-  { month: "January", visitors: 186 },
-  { month: "February", visitors: 205 },
-  { month: "March", visitors: -207 },
-  { month: "April", visitors: 173 },
-  { month: "May", visitors: -209 },
-  { month: "June", visitors: 214 }
-];
-
 const chartConfig = {
-  visitors: {
-    label: "Visitors"
+  avg_calories: {
+    label: "Average Calories"
   }
 } satisfies ChartConfig;
 
 export function CalorieProgress() {
+  const [chartData, setChartData] = React.useState<{ month: string; avg_calories: number; }[]>([]);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/grouped-calorie-data');
+        const result = await response.json();
+        if (result.data) {
+          const transformedData = result.data.map((item: { month: string; average_total_calories: number; }) => ({
+            month: item.month.trim(),
+            avg_calories: item.average_total_calories - 2700
+          }));
+          const sortedData = transformedData.sort((a: { month: string }, b: { month: string }) => new Date(`01 ${a.month} 2020`).getTime() - new Date(`01 ${b.month} 2020`).getTime());
+          setChartData(sortedData);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  console.log(chartData)
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Bar Chart - Negative</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Track Calorie Progress</CardTitle>
+        <CardDescription>Showing average total calories </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <BarChart accessibilityLayer data={chartData}>
+          <BarChart accessibilityLayer data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
             <CartesianGrid vertical={false} />
             <ChartTooltip
               cursor={false}
@@ -58,7 +75,7 @@ export function CalorieProgress() {
                 <ChartTooltipContent hideLabel hideIndicator />
               }
             />
-            <Bar dataKey="visitors" radius={5}>
+            <Bar dataKey="avg_calories" radius={5}>
               <LabelList
                 position="top"
                 dataKey="month"
@@ -68,7 +85,7 @@ export function CalorieProgress() {
                 <Cell
                   key={item.month}
                   fill={
-                    item.visitors > 0
+                    item.avg_calories > 0
                       ? "hsl(var(--chart-1))"
                       : "hsl(var(--chart-2))"
                   }

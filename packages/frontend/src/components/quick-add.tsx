@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
+import { useState, useEffect } from "react";
+import { MinusIcon, PlusCircledIcon, PlusIcon } from "@radix-ui/react-icons";
 import { Bar, BarChart, ResponsiveContainer } from "recharts";
 
 import { Button } from "./ui/button";
@@ -16,75 +16,92 @@ import {
   DrawerTrigger
 } from "./ui/drawer";
 import { ChartTooltip } from "./ui/chart";
+import MealDropdown from "@/app/record-meal/components/meal-dropdown";
+import { useDate } from "@/contexts/date-context";
+import { fetchCalorieData } from "@/data/calorie-data";
 
-const data = [
-  {
-    goal: 400
-  },
-  {
-    goal: 300
-  },
-  {
-    goal: 200
-  },
-  {
-    goal: 300
-  },
-  {
-    goal: 200
-  },
-  {
-    goal: 278
-  },
-  {
-    goal: 189
-  },
-  {
-    goal: 239
-  },
-  {
-    goal: 300
-  },
-  {
-    goal: 200
-  },
-  {
-    goal: 278
-  },
-  {
-    goal: 189
-  },
-  {
-    goal: 349
+
+export default function QuickAdd() {
+  const [calories, setCalories] = useState(350);
+  const [chartData, setChartData] = useState([{ calories: 0 }]);
+  const [isClient, setIsClient] = useState(false);
+  const [selectedMeal, setSelectedMeal] = useState<"breakfast" | "lunch" | "dinner" | "snacks">("breakfast")
+  const { date } = useDate();
+
+  const formattedDate = date.toISOString().split('T')[0];
+  useEffect(() => {
+    fetchCalorieData(formattedDate).then((data) => {
+      if (data && data.data && data.data.length > 0) {
+        setChartData(data.data);
+      } else {
+        setChartData([{ calories: 0 }]);
+      }
+    });
+  }, [formattedDate]);
+
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return null; // Prevent rendering on the server
   }
-];
-
-export default function DrawerDemo() {
-  const [goal, setGoal] = useState(350);
-  const [chartData, setChartData] = useState(data);
 
   function onClick(adjustment: number) {
-    setGoal(Math.max(200, Math.min(400, goal + adjustment)));
+    setCalories(Math.max(0, Math.min(10000, calories + adjustment)));
   }
 
   function handleSubmit() {
-    const newData = [...chartData, { goal }];
+    const newData = [...chartData, { calories }];
     setChartData(newData);
+    const body = JSON.stringify({
+      meal: selectedMeal,
+      calories: calories,
+      date: date.toISOString().split('T')[0],
+    });
+
+    fetch('/api/food-data', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: body
+    })
+      .then(response => {
+        if (!response.ok) {
+          return response.json().then(errorData => {
+            console.error('Error inserting data:', errorData.error);
+            throw new Error('There is a problem with your log');
+          });
+        }
+        return response.json();
+      })
+      .then(() => {
+        console.log('Data inserted successfully');
+        setCalories(350); // Reset calories after successful submission
+      })
+      .catch(error => {
+        console.error('An error occurred while submitting data:', error);
+      });
   }
+
 
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <Button variant="outline">Open Drawer</Button>
+        <Button variant={"ghost"} className="w-full my-2"><PlusCircledIcon /> Quick Add Calories</Button>
       </DrawerTrigger>
 
       <DrawerContent>
         <div className="mx-auto w-full max-w-sm">
           <DrawerHeader>
-            <DrawerTitle>Move Goal</DrawerTitle>
+            <DrawerTitle>Quick Add Calories</DrawerTitle>
             <DrawerDescription>
-              Set your daily activity goal.
+              Set a meal and quickly add calories
             </DrawerDescription>
+            <MealDropdown selectedMeal={selectedMeal} setSelectedMeal={(meal) => setSelectedMeal(meal as "breakfast" | "lunch" | "dinner" | "snacks")} />
+
           </DrawerHeader>
           <div className="p-4 pb-0">
             <div className="flex items-center justify-center space-x-2">
@@ -92,14 +109,14 @@ export default function DrawerDemo() {
                 variant="outline"
                 size="icon"
                 className="h-8 w-8 shrink-0 rounded-full"
-                onClick={() => onClick(-10)}
-                disabled={goal <= 200}>
+                onClick={() => onClick(-50)}
+                disabled={calories <= 0}>
                 <MinusIcon className="h-4 w-4" />
                 <span className="sr-only">Decrease</span>
               </Button>
               <div className="flex-1 text-center">
                 <div className="text-7xl font-bold tracking-tighter">
-                  {goal}
+                  {calories}
                 </div>
                 <div className="text-[0.70rem] uppercase text-muted-foreground">
                   Calories/day
@@ -109,8 +126,8 @@ export default function DrawerDemo() {
                 variant="outline"
                 size="icon"
                 className="h-8 w-8 shrink-0 rounded-full"
-                onClick={() => onClick(10)}
-                disabled={goal >= 400}>
+                onClick={() => onClick(50)}
+                disabled={calories >= 10000}>
                 <PlusIcon className="h-4 w-4" />
                 <span className="sr-only">Increase</span>
               </Button>
@@ -120,7 +137,7 @@ export default function DrawerDemo() {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData}>
                   <Bar
-                    dataKey="goal"
+                    dataKey="calories"
                     style={
                       {
                         fill: "hsl(var(--foreground))",

@@ -3,6 +3,10 @@ import Image from "next/image"
 
 import { Separator } from "@/components/ui/separator"
 import { SidebarNav } from "./components/sidebar-nav"
+import { SidebarProvider } from "@/components/ui/sidebar"
+import { Button } from "@/components/ui/button"
+import { HomeIcon } from "@radix-ui/react-icons"
+import Link from "next/link"
 
 export const metadata: Metadata = {
   title: "Forms",
@@ -18,10 +22,6 @@ const sidebarNavItems = [
     title: "Personal Info",
     href: "/account/personalInfo",
   },
-  {
-    title: "Notifications",
-    href: "/account/notifications",
-  }
 ]
 
 interface SettingsLayoutProps {
@@ -48,11 +48,14 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
         />
       </div>
       <div className="hidden space-y-6 p-10 pb-16 md:block">
-        <div className="space-y-0.5">
-          <h2 className="text-2xl font-bold tracking-tight">Settings</h2>
-          <p className="text-muted-foreground">
-            Manage your account settings and set e-mail preferences.
-          </p>
+        <div className="flex justify-between items-center space-y-0.5">
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight">Settings</h2>
+            <p className="text-muted-foreground">
+              Manage your account settings.
+            </p>
+          </div>
+          <Link href="/"><Button variant={"link"} className="border w-8 h-8"><HomeIcon /></Button></Link>
         </div>
         <Separator className="my-6" />
         <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">

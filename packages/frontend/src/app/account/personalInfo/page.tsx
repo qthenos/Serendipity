@@ -1,5 +1,7 @@
 import { Separator } from "@/components/ui/separator"
 import { PersonalInfoForm } from "./personal-info-form"
+import { AppSidebar } from "@/components/app-sidebar"
+import { SidebarTrigger } from "@/components/ui/sidebar"
 
 export default function SettingsPersonalInfoPage() {
   return (

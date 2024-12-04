@@ -17,7 +17,7 @@ const MealDropdown = ({ selectedMeal, setSelectedMeal }: MealDropdownProps) => {
                     <SelectItem value="breakfast">Breakfast</SelectItem>
                     <SelectItem value="lunch">Lunch</SelectItem>
                     <SelectItem value="dinner">Dinner</SelectItem>
-                    <SelectItem value="snack">Snack</SelectItem>
+                    <SelectItem value="snacks">Snacks</SelectItem>
                 </SelectGroup>
             </SelectContent>
         </Select>

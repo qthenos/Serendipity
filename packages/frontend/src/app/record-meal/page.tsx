@@ -25,6 +25,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import MealDropdown from "./components/meal-dropdown"
 import { useToast } from "@/hooks/use-toast"
+import { useDate } from "@/contexts/date-context"
 
 export type FoodItem = {
     label: string
@@ -139,6 +140,7 @@ export default function Page() {
     }
 
     const { toast } = useToast();
+    const { date } = useDate();
     const onClick = async () => {
         if (selectedItems.length === 0) {
             toast({
@@ -158,7 +160,7 @@ export default function Page() {
                     fat: item.FAT * item.quantity,
                     carbs: item.CHOCDF * item.quantity,
                     fiber: item.FIBTG * item.quantity,
-                    date: new Date().toISOString().split('T')[0],
+                    date: date.toISOString().split('T')[0],
                 });
 
                 const response = await fetch('/api/food-data', {
@@ -244,7 +246,7 @@ export default function Page() {
                                             </div>
                                             <div className="flex items-center">
                                                 <p className="text-sm">Count: </p>
-                                                <Input type="number" defaultValue={1} className="ml-2 w-[3rem]" onChange={(e) => handleQuantityChange(item.label, parseInt(e.target.value, 10))} />
+                                                <Input type="number" defaultValue={1} className="ml-2 w-[4rem]" onChange={(e) => handleQuantityChange(item.label, parseInt(e.target.value, 10))} />
                                             </div>
                                         </div>
                                         <Separator className="my-2" />
