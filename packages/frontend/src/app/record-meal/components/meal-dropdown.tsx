@@ -1,13 +1,18 @@
 import { Select, SelectValue, SelectGroup, SelectContent, SelectItem, SelectLabel, SelectTrigger } from "@/components/ui/select";
 
-const MealDropdown = () => {
+export type MealDropdownProps = {
+    selectedMeal: "breakfast" | "lunch" | "dinner" | "snacks";
+    setSelectedMeal: (meal: string) => void;
+}
+
+const MealDropdown = ({ selectedMeal, setSelectedMeal }: MealDropdownProps) => {
     return (
-        <Select>
+        <Select value={selectedMeal} onValueChange={setSelectedMeal}>
             <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Select a meal" />
             </SelectTrigger>
             <SelectContent>
-                <SelectGroup defaultValue={"breakfast"}>
+                <SelectGroup>
                     <SelectLabel>Meal</SelectLabel>
                     <SelectItem value="breakfast">Breakfast</SelectItem>
                     <SelectItem value="lunch">Lunch</SelectItem>
@@ -17,6 +22,5 @@ const MealDropdown = () => {
             </SelectContent>
         </Select>
     );
-}
-
+}   
 export default MealDropdown;

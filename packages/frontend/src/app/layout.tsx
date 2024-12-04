@@ -5,6 +5,7 @@ import "./globals.css";
 import SupabaseProvider from "../providers/SupabaseProvider";
 import UserProvider from "../providers/UserProvider";
 import { DateProvider } from "@/contexts/date-context";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -42,6 +43,7 @@ export default function RootLayout({
                   <main>
                     {children}
                   </main>
+                  <Toaster />
                </DateProvider>
             </ThemeProvider>
           </UserProvider>
