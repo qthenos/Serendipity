@@ -3,7 +3,6 @@ import Image from "next/image"
 
 import { Separator } from "@/components/ui/separator"
 import { SidebarNav } from "./components/sidebar-nav"
-import { SidebarProvider } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { HomeIcon } from "@radix-ui/react-icons"
 import Link from "next/link"

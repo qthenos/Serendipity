@@ -1,11 +1,8 @@
 import { CalorieWheel } from "@/components/calorie-wheel";
 import { MacroChart } from "@/components/macro-chart";
 import { ModeToggle } from "@/components/mode-toggle";
-import QuickAdd from "@/components/quick-add";
 import { Toaster } from "@/components/ui/toaster";
 import { CalorieProgress } from "@/components/calorie-progress";
-import { WeightPlot } from "@/components/weight-plot";
-import { DateAggregation } from "@/components/date-aggreation";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 

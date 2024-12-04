@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { TrendingDown } from "lucide-react";
 import { Label, Pie, PieChart } from "recharts";
 
 import {

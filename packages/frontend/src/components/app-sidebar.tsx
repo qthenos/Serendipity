@@ -1,5 +1,4 @@
 import * as React from "react";
-import { GalleryVerticalEnd } from "lucide-react";
 
 import { DatePicker } from "@/components/date-picker";
 import { NavUser } from "@/components/nav-user";
