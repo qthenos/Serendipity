@@ -21,10 +21,10 @@ import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
-import { Select, SelectItem, SelectLabel, SelectGroup, SelectContent, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import MealDropdown from "./components/meal-dropdown"
+import { useToast } from "@/hooks/use-toast"
 
 export type FoodItem = {
     label: string
@@ -45,6 +45,7 @@ export default function Page() {
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] =
         React.useState<VisibilityState>({})
+    const [selectedMeal, setSelectedMeal] = React.useState<"breakfast" | "lunch" | "dinner" | "snacks">("breakfast")
 
     const fetchData = async (query: string) => {
         try {
@@ -137,6 +138,65 @@ export default function Page() {
         );
     }
 
+    const { toast } = useToast();
+    const onClick = async () => {
+        if (selectedItems.length === 0) {
+            toast({
+                title: "No items selected",
+                description: "Please select at least one food item to log.",
+            });
+            return;
+        }
+
+        try {
+            let allSuccess = true;
+            for (const item of selectedItems) {
+                const body = JSON.stringify({
+                    meal: selectedMeal,
+                    calories: item.ENERC_KCAL * item.quantity,
+                    protein: item.PROCNT * item.quantity,
+                    fat: item.FAT * item.quantity,
+                    carbs: item.CHOCDF * item.quantity,
+                    fiber: item.FIBTG * item.quantity,
+                    date: new Date().toISOString().split('T')[0],
+                });
+
+                const response = await fetch('/api/food-data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: body
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('Error inserting data:', errorData.error);
+                    toast({
+                        title: "Uh oh!",
+                        description: "There is a problem with your log",
+                    });
+                    allSuccess = false;
+                    continue; // Continue with the next item
+                }
+            }
+
+            if (allSuccess) {
+                console.log('All data inserted successfully');
+                setSelectedItems([]);
+                setRowSelection({});
+                toast({
+                    title: "Yay!",
+                    description: "Food logged successfully",
+                });
+            }
+        } catch (error) {
+            console.error('An error occurred while submitting data:', error);
+        }
+    }
+
+
+
     return (
         <SidebarProvider>
             <AppSidebar />
@@ -169,8 +229,8 @@ export default function Page() {
                 <ResizablePanel minSize={20} className="p-8">
                     <p className="mb-4 text-large font-bold leading-none">Added Food Items</p>
                     <Separator className="my-2" />
-                    <MealDropdown />
-                  
+                    <MealDropdown selectedMeal={selectedMeal} setSelectedMeal={(meal) => setSelectedMeal(meal as "breakfast" | "lunch" | "dinner" | "snacks")} />
+
                     <div className="flex flex-col h-full min-w-6">
                         <ScrollArea className="h-[38rem] w-full rounded-md border my-4 ">
                             <div className="p-4">
@@ -197,10 +257,10 @@ export default function Page() {
                                 setSelectedItems([]);
                                 setRowSelection({});
                             }}>Clear</Button>
-                            <Button type="submit">Submit</Button>
+                            <Button type="submit" onClick={onClick}>Submit</Button>
                         </div>
                     </div>
-                 
+
                 </ResizablePanel>
             </ResizablePanelGroup>
         </SidebarProvider>
