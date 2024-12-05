@@ -1,4 +1,3 @@
-
 {
   "name": "serendipity",
   "version": "1.0.0",
@@ -13,6 +12,9 @@
   "license": "ISC",
   "description": "",
   "workspaces": [
-      "packages/*"
-  ]
+    "packages/*"
+  ],
+  "devDependencies": {
+    "cypress": "^13.16.1"
+  }
 }
