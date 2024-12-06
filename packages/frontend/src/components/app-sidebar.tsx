@@ -1,7 +1,6 @@
 import * as React from "react";
 
 import { DatePicker } from "@/components/date-picker";
-import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -65,11 +64,11 @@ export function AppSidebar({
   return (
     <Sidebar {...props}>
       <SidebarHeader className="h-16 border-b border-sidebar-border">
-        <NavUser user={data.user} />
+        <p className="text-md font-bold pl-4 pt-4">Serendipity</p>
       </SidebarHeader>
       <SidebarContent>
         <DatePicker />
-        <Separator orientation="horizontal"/>
+        <Separator orientation="horizontal" />
         <p className="text-md font-bold pl-4 pt-4">Navigation</p>
         <SidebarGroup>
           <SidebarMenu>
@@ -99,7 +98,7 @@ export function AppSidebar({
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-          <Separator orientation="horizontal"/>
+            <Separator orientation="horizontal" />
             <QuickAdd />
           </SidebarMenuItem>
         </SidebarMenu>
