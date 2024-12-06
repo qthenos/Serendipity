@@ -14,7 +14,7 @@ export default function Home() {
         <SidebarTrigger />
         <div className="flex-1 flex flex-col p-8 sm:p-20 font-[family-name:var(--font-geist-sans)]">
           <div className="flex justify-between items-center mb-8">
-            <p className="text-4xl font-bold">Serendipity</p>
+            <p className="text-4xl font-bold">HealthDipity</p>
             <ModeToggle />          
           </div>
           <div className="flex-1 space-y-8">

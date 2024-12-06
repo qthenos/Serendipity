@@ -31,19 +31,10 @@ import {
 
 const personalInfoFormSchema = z.object({
   name: z
-    .string()
-    .min(2, {
-      message: "Name must be at least 2 characters.",
-    })
-    .max(30, {
-      message: "Name must not be longer than 30 characters.",
-    }),
+    .string().optional(),
   dob: z.date({
     required_error: "A date of birth is required.",
-  }),
-  language: z.string({
-    required_error: "Please select a language.",
-  }),
+  })
 })
 
 type PersonalInfoFormValues = z.infer<typeof personalInfoFormSchema>
@@ -60,15 +51,10 @@ export function PersonalInfoForm() {
     defaultValues,
   })
 
-  function onSubmit(data: PersonalInfoFormValues) {
+  function onSubmit() {
     toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    })
+      title: "Personal Info Updated"
+    });
   }
 
   return (
