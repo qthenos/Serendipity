@@ -1,3 +1,5 @@
+"use client"
+
 import { signup } from '../actions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -5,8 +7,18 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { GitHubLogoIcon } from '@radix-ui/react-icons';
+import { useToast } from "@/hooks/use-toast"
 
-export default function SignupPage() {
+export default function SignupPage() {  
+  const { toast } = useToast();
+
+  const handleSubmit = (event: React.FormEvent) => {
+    toast({
+      title: "Success",
+      description: "Please check your email for a magic link"
+    });
+  }
+
   return (
     <div className="flex items-center justify-center min-h-screen">
       <Card className="mx-auto max-w-sm">
@@ -17,7 +29,7 @@ export default function SignupPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form method="post">
+          <form method="post" onSubmit={handleSubmit}>
             <div className="grid gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
