@@ -5,6 +5,7 @@ Project Figma UI: https://www.figma.com/proto/4FJy8DZYwZOvkl9iPe4cCV/%40shadcn%2
 Project Backlog: https://github.com/users/qthenos/projects/3/views/1 <br />
 
 Note: to run cypress testing use "npm run cy:open" in either the root or /packages/frontend/ dirs <br />
+(Warning: some of the pages take forever to build. Make sure all pages have been built at least once before traversing with the E2E testing in cypress) <br />
 
 Project Blurb: Our project is a comprehensive app designed to help users track their food and exercise data throughout the day, providing them with a centralized platform 
 to monitor their health and fitness journey. The app allows users to log the meals they eat, the calories consumed, and the exercises they complete, offering a clear 
