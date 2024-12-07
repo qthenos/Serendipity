@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast"
 export default function SignupPage() {  
   const { toast } = useToast();
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = () => {
     toast({
       title: "Success",
       description: "Please check your email for a magic link"

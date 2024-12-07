@@ -25,6 +25,7 @@ export default function LoginPage() {
         });
       }
     } catch (error) {
+      console.log(error);
       toast({
         title: "Login failed",
         description: "Invalid email or password"
